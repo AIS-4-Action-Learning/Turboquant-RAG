@@ -4,7 +4,7 @@
 This script reads JSONL benchmark outputs from a telemetry directory and emits:
 1) Memory usage comparison table
 2) Latency comparison table
-3) Comparison plots for memory and latency ratios
+3) Comparison plots for memory and latency
 
 It is tailored to files named like:
 - BF16_<context>.jsonl
@@ -236,7 +236,7 @@ def plot_memory(memory_df: pd.DataFrame, output_dir: Path) -> None:
 
     fig, axes = plt.subplots(1, 2, figsize=(16, 6))
 
-    # VRAM comparison + ratio.
+    # Keep the memory panel to the two VRAM series only.
     ax = axes[0]
     ax.plot(x, memory_df["BF16_VRAM_MB"], marker="o", label="BF16 VRAM (MB)")
     ax.plot(x, memory_df["Turboquant_VRAM_MB"], marker="o", label="TurboQuant VRAM (MB)")
@@ -244,21 +244,7 @@ def plot_memory(memory_df: pd.DataFrame, output_dir: Path) -> None:
     ax.set_xlabel("Context Length")
     ax.set_ylabel("Peak VRAM (MB)")
     ax.grid(True, alpha=0.25)
-
-    ax2 = ax.twinx()
-    ax2.plot(
-        x,
-        memory_df["Memory_Usage_Ratio_TQ_over_BF16"],
-        color="purple",
-        linestyle="--",
-        marker="s",
-        label="Memory ratio (TQ/BF16)",
-    )
-    ax2.set_ylabel("Ratio")
-
-    lines1, labels1 = ax.get_legend_handles_labels()
-    lines2, labels2 = ax2.get_legend_handles_labels()
-    ax.legend(lines1 + lines2, labels1 + labels2, loc="best")
+    ax.legend(loc="best")
 
     # TTFT / TPOT comparison.
     ax = axes[1]
